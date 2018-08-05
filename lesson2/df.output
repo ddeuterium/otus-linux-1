@@ -1,16 +1,6 @@
-Filesystem                       Size  Used Avail Use% Mounted on
-/dev/mapper/VolGroup00-LogVol00   38G  3.0G   35G   8% /
-devtmpfs                         487M     0  487M   0% /dev
-tmpfs                            496M     0  496M   0% /dev/shm
-tmpfs                            496M  6.8M  490M   2% /run
-tmpfs                            496M     0  496M   0% /sys/fs/cgroup
-/dev/sda2                       1014M   63M  952M   7% /boot
-/dev/md2                         571M  340M  202M  63% /home/vagrant/mount/dir2
-tmpfs                            100M     0  100M   0% /run/user/0
-/dev/md1                         282M  116M  152M  44% /home/vagrant/mount/dir1
+# This is a part of 'df -kh' output showing device with 5 partitions
 /dev/md0p1                        88M  1.6M   81M   2% /home/vagrant/mount/md0/p1
 /dev/md0p2                        89M  1.6M   83M   2% /home/vagrant/mount/md0/p2
 /dev/md0p3                        55M  3.0M   52M   6% /home/vagrant/mount/md0/p3
 /dev/md0p4                       120M  6.3M  114M   6% /home/vagrant/mount/md0/p4
 /dev/md0p5                       120M  6.3M  114M   6% /home/vagrant/mount/md0/p5
-tmpfs                            100M     0  100M   0% /run/user/1000
