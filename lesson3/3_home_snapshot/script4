@@ -1,0 +1,22 @@
+Script started on Fri Aug 10 21:22:33 2018
+]0;root@otuslinux:~[?1034h[root@otuslinux ~]# umount /home
+]0;root@otuslinux:~[root@otuslinux ~]# lvconvert --merge VolGroup00/vo  lvol2
+  Merging of volume VolGroup00/lvol2 started.
+  VolGroup00/lvol0: Merged: 100.00%
+]0;root@otuslinux:~[root@otuslinux ~]# ls -lh /home/testDir
+ls: cannot access /home/testDir: No such file or directory
+]0;root@otuslinux:~[root@otuslinux ~]# mount /home
+]0;root@otuslinux:~[root@otuslinux ~]# mount /homels -lh /home/testDir
+total 408M
+-rw-r--r--. 1 root root 408M Aug 10 21:17 testFile1
+-rw-r--r--. 1 root root   13 Aug 10 21:18 testFile2
+]0;root@otuslinux:~[root@otuslinux ~]# lvs
+  LV       VG         Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao---- 8.00g                                                    
+  LogVol01 VolGroup00 -wi-ao---- 1.50g                                                    
+  lvol0    VolGroup00 -wi-ao---- 4.00g                                                    
+  lvol1    VolGroup00 rwi-aor--- 8.00g                                    100.00          
+]0;root@otuslinux:~[root@otuslinux ~]# exit
+exit
+
+Script done on Fri Aug 10 21:26:34 2018

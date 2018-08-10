@@ -1,0 +1,25 @@
+Script started on Fri Aug 10 21:17:27 2018
+]0;root@otuslinux:~[?1034h[root@otuslinux ~]# mkdir /home/testDir
+]0;root@otuslinux:~[root@otuslinux ~]# yes > /home/testDir/testFile1
+^C
+]0;root@otuslinux:~[root@otuslinux ~]# echo 'a' >    Hello Work ld!' > /home/testDir/testFile2
+]0;root@otuslinux:~[root@otuslinux ~]# ls -lh /home/testDir/
+total 408M
+-rw-r--r--. 1 root root 408M Aug 10 21:17 testFile1
+-rw-r--r--. 1 root root   13 Aug 10 21:18 testFile2
+]0;root@otuslinux:~[root@otuslinux ~]# lvcreate -L1G -s VolGroup00/lvol0
+  Logical volume "lvol2" created.
+]0;root@otuslinux:~[root@otuslinux ~]# rm -rf /home/testDir
+]0;root@otuslinux:~[root@otuslinux ~]# umount /home
+umount: /home: target is busy.
+        (In some cases useful info about processes that use
+         the device is found by lsof(8) or fuser(1))
+]0;root@otuslinux:~[root@otuslinux ~]# cd /
+]0;root@otuslinux:/[root@otuslinux /]# cd /umount /home
+umount: /home: target is busy.
+        (In some cases useful info about processes that use
+         the device is found by lsof(8) or fuser(1))
+]0;root@otuslinux:/[root@otuslinux /]# e exit
+exit
+
+Script done on Fri Aug 10 21:22:04 2018

@@ -1,0 +1,65 @@
+Script started on Fri Aug 10 20:58:07 2018
+]0;root@otuslinux:~[?1034h[root@otuslinux ~]# pvcreate /dev/sdf
+WARNING: ext4 signature detected on /dev/sdf at offset 1080. Wipe it? [y/n]: y
+  Wiping ext4 signature on /dev/sdf.
+  Physical volume "/dev/sdf" successfully created.
+]0;root@otuslinux:~[root@otuslinux ~]# vgextend VolGroup00 /dev/sdf
+  Volume group "VolGroup00" successfully extended
+]0;root@otuslinux:~[root@otuslinux ~]# lvcreate -L4G VolGroup00
+  Logical volume "lvol0" created.
+]0;root@otuslinux:~[root@otuslinux ~]# lvcreate -L8G -m1 VolGroup00
+  Logical volume "lvol1" created.
+]0;root@otuslinux:~[root@otuslinux ~]# mkfs.ext4 /dev/mapper/VolGroup00-lvol0
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+262144 inodes, 1048576 blocks
+52428 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=1073741824
+32 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736
+
+Allocating group tables:  0/32     done                            
+Writing inode tables:  0/32     done                            
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information:  0/32     done
+
+]0;root@otuslinux:~[root@otuslinux ~]# mkfs.ext4 /dev/mapper/VolGroup00-lvol0 1
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+524288 inodes, 2097152 blocks
+104857 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=2147483648
+64 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+
+Allocating group tables:  0/64     done                            
+Writing inode tables:  0/64     done                            
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information:  0/64     done
+
+]0;root@otuslinux:~[root@otuslinux ~]# mkdir /home_new
+]0;root@otuslinux:~[root@otuslinux ~]# mkdir /var_new
+]0;root@otuslinux:~[root@otuslinux ~]# mount /dev/mapper/VolGroup00-lvol0 /home_new
+]0;root@otuslinux:~[root@otuslinux ~]# mount /dev/mapper/VolGroup00-lvol0 /home_new[1P[1@1 /home[1P[1P[1P[1P[1@v[1@a[1@r
+]0;root@otuslinux:~[root@otuslinux ~]# rsync -aX /home. /. /home_new/.
+]0;root@otuslinux:~[root@otuslinux ~]# rsync -aX /var/. /var_new/.
+]0;root@otuslinux:~[root@otuslinux ~]# exit
+exit
+
+Script done on Fri Aug 10 21:00:41 2018
