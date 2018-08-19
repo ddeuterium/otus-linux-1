@@ -1,7 +1,0 @@
-[Unit]
-Description=mychecker: scan log for keyword
-
-[Service]
-Type=oneshot
-EnvironmentFile=/etc/sysconfig/mychecker
-ExecStart=/bin/bash /usr/bin/mychecker.sh

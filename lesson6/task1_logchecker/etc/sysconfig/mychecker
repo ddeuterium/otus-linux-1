@@ -1,4 +1,0 @@
-keyword=mychecker
-outputFile=/var/log/mychecker/mychecker.log
-scanFile=/var/log/messages
-
