@@ -1,0 +1,10 @@
+[Unit]
+Description=Check log for keyword
+
+[Timer]
+OnCalendar=*:*:0/30
+AccuracySec=1sec
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target
