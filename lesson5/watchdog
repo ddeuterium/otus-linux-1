@@ -1,0 +1,70 @@
+#!/bin/bash
+
+##
+# Simple watchdog. This script accepts two arguments: path to pidfile and command.
+# If pidfile does not exist or process with corresponding pid is not alive, it runs specified command.
+##
+
+USAGE="Usage: $0 path_to_pidfile restart_command"
+
+# Check that required 2 arguments were passed
+if [ $# -ne 2 ]; then
+	echo $USAGE
+	exit
+fi
+
+# Function executing given 'restart' command
+restart_service() {
+	cmd=$1
+	echo "Executing command: $cmd"
+	eval "$cmd"
+}
+
+# Function checking that process with specified pid exists
+pid_is_alive() {
+	pid=$1
+
+	output=`ps $pid | tail -n+2`
+	if [ -n "$output" ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+# Read command line args
+PIDFILE=$1
+RESTART_CMD=$2
+# Time to sleep between checks
+SLEEP=3
+
+# Run infinite loop
+while true
+do
+	if [ ! -f $PIDFILE ]; then
+		echo "Pidfile $PIDFILE not found. Restarting process.."
+		restart_service	"$RESTART_CMD"
+		sleep $SLEEP
+		continue
+	fi
+
+	if [ ! -r $PIDFILE ]; then
+		echo "Can't read pidfile $PIDFILE"
+		exit 1
+	fi
+	
+	read pid < $PIDFILE
+	echo -n "PID is: $pid. "
+
+	pid_is_alive $pid
+	alive=$?
+	if [ $alive -ne 0 ]; then
+		echo "Process is alive"
+	else
+		echo "Process not found. Restarting.."
+		restart_service "$RESTART_CMD"
+	fi
+
+	sleep $SLEEP
+done
+

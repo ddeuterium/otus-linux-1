@@ -1,0 +1,19 @@
+!#/bin/bash
+# Print names and values of all uppercase variables
+
+for i in {A..Z};
+do
+	# Get all varnames starting with some letter $i
+	eval vars='${!'$i'*}'
+	# If we found at least one var - iterate through them
+	if [ -n "$vars" ] 
+	then
+		for var in $vars;
+		do
+			# get value of var
+			eval 'val=$'${var}
+			# print var name and value
+			echo "${var}=${val}"
+		done
+	fi
+done
