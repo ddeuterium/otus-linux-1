@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 # Print names and values of all uppercase variables
 
 for i in {A..Z};
