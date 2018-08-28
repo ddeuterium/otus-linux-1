@@ -1,10 +1,13 @@
 #!/bin/bash
+#
 # Print names and values of all uppercase variables
-
-for i in {A..Z};
+#
+allLetters=`echo {A..Z}`
+letters=${1-$allLetters}
+for l in $letters;
 do
-	# Get all varnames starting with some letter $i
-	eval vars='${!'$i'*}'
+	# Get all varnames starting with some letter $l
+	eval vars='${!'$l'*}'
 	# If we found at least one var - iterate through them
 	if [ -n "$vars" ] 
 	then
