@@ -1,0 +1,91 @@
+#!/bin/bash
+
+##
+# Watchdog sending email. 
+# This script accepts two arguments: path to pidfile and email address.
+# If pidfile does not exist or process with corresponding pid is not alive, it sends email to specified email address.
+##
+
+USAGE="Usage: $0 path_to_pidfile email"
+
+# Check that required 2 arguments were passed
+if [ $# -ne 2 ]; then
+	echo $USAGE
+	exit
+fi
+
+# Path to file that is used as flag showing that email was sent already.
+# This file is removed at first run. Don't forget to remove it when you fix the problem with process.
+FLAG_FILE="emailSent.flag"
+if [ -e $FLAG_FILE ]; then
+	echo "Removing flag file ${FLAG_FILE}"
+	rm $FLAG_FILE
+fi
+
+# Function sending emai
+send_email() {
+	if [ -e $FLAG_FILE ]; then
+		echo "Will not send email. Flag file ${FLAG_FILE} exists"
+		return
+	fi
+
+	to=$1
+	pidfile=$2
+	subject="Watchdog: process not found"
+	text="Process for pidfile ${pidfile} not found or pidfile does not exist"
+	echo "Sending email to $to"
+	echo "$text" | mail -s "$subject" "$to"
+	# Set flag that email is sent - we don't want to spam
+	touch $FLAG_FILE
+}
+
+# Function checking that process with specified pid exists
+pid_is_alive() {
+	pid=$1
+
+	output=`ps $pid | tail -n+2`
+	if [ -n "$output" ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+# Read command line args
+PIDFILE=$1
+EMAIL=$2
+# Time to sleep between checks
+SLEEP=3
+
+
+# Run infinite loop
+while true
+do
+	if [ ! -f $PIDFILE ]; then
+		echo "Pidfile $PIDFILE not found. Sending email.."
+		send_email $EMAIL $PIDFILE
+		sleep $SLEEP
+		continue
+	fi
+
+	if [ ! -r $PIDFILE ]; then
+		echo "Can't read pidfile $PIDFILE"
+		send_email $EMAIL $PIDFILE
+		exit 1
+	fi
+	
+	read pid < $PIDFILE
+	echo -n "PID is: $pid. "
+
+	pid_is_alive $piddd
+	alive=$?
+	if [ $alive -ne 0 ]; then
+		echo "Process is alive"
+	else
+		echo "Process not found. Sending email.."
+		send_email $EMAIL $PIDFILE
+	fi
+
+	sleep $SLEEP
+done
+
