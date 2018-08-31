@@ -1,0 +1,30 @@
+#!/bin/bash
+
+##
+# Output Top N ip-addresses which performed most queries to nginx
+# This script accepts three arguments: 
+# 1. Path to logfile
+# 2. N - count of addresses to output
+# 3. (optional) Position of ip-address field in the log line 
+##
+
+USAGE="Usage: $0 path_to_file ips_count [field_pos]"
+
+# Check that required 2 arguments were passed
+if [ $# -lt 2 ]; then
+	echo $USAGE
+	exit
+fi
+
+LOG_FILE=$1
+IPS_COUNT=$2
+FIELD_POS=${3-1}
+
+#
+# Comments:
+# 1. awk '{print $'${FIELD_POS}'}' extracts one field from each line
+# 2. Then we sort ips for 'uniq' and run 'uniq'
+# 3. We sort lines by the first field (count of occurences) in reverse and "natural" order
+# 4. We reverse order of fields so that output looks like "ipAddress count"
+#
+cat "${LOG_FILE}" | awk '{print $'${FIELD_POS}'}' | sort | uniq -c | sort -nr | head -n "${IPS_COUNT}" | awk '{print $2,$1}'
