@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#
+# Run specified script once and only once (don't run it if it is already running).
+# This script accepts two parameters:
+# 1. Path to the script that should be run
+# 2. (optional) path to the lock file
+#
+
+USAGE="Usage: $0 path_to_script [path_to_lock_file]"
+
+# Check that required argument was passed
+if [ $# -lt 1 ]; then
+	echo $USAGE
+	exit
+fi
+
+SCRIPT=$1
+LOCK=${2-$1.singlerun.lock}
+
+# If lock file exists - exit
+if [ -f $LOCK ]; then
+ echo Job is already running\!
+ exit 6
+fi
+
+# Set lock (create lock file)
+touch $LOCK
+
+# Set trap for termination signals: remove lock file before exit
+trap 'rm -f "$LOCK"; exit $?' INT TERM EXIT
+
+# Run main script
+eval "$SCRIPT"
+
+# Remove lock file
+rm -f $LOCK
+
+# Remove trap
+trap - INT TERM EXIT
