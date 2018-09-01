@@ -1,0 +1,165 @@
+#!/bin/bash
+
+#
+# Generate same output as `ps ax` command does.
+#
+
+# Dummy temporary variable for returning strings from functionsdd
+retvar=""
+
+# format of each output line
+FORMAT="%5s %-8s %-5s %-10s %s\n"
+# get 'ticks per second' for further "TIME" calculations
+HERTZ=`./hertz`
+
+# print header
+printf "$FORMAT" PID TT STAT TIME COMMAND
+
+DRIVERS_name=()
+DRIVERS_maj=()
+DRIVERS_min=()
+# Load information about tty drivers from /proc/tty/drivers
+load_drivers() {
+	i=1
+	while read line
+	do
+		fields=($line)
+		name=${fields[1]/\/dev\/}
+		maj=${fields[2]}
+		min=${fields[3]}
+
+		DRIVERS_name[$i]=$name
+		DRIVERS_maj[$i]=$maj
+		DRIVERS_min[$i]=$min
+		((i++))
+	done < /proc/tty/drivers
+}
+
+# Get MAJ:MIN device numbers by tty_nr
+get_majmin() {
+	retvar="" # reset retvar
+	tty_nr=$1
+	
+	# Do some tricky calculations as described in ps man:
+	####
+	# The minor device number is contained in the combination of bits 31 to 20 and 7 to 0; the major device number is in bits 19 to 8.)
+	###
+	maj=$(($tty_nr >> 8 % (2 ** 12)))
+	min=$((($tty_nr >> 20 << 12) + $tty_nr % (2 ** 8)))
+
+	retvar="${maj}:${min}"
+}
+
+# Get terminal name by maj:min numbers of device
+get_tty_by_majmin() {
+	retvar="" # reset retvar
+	# parse "maj:min" string into two separate variables maj and min
+	tmpIFS=$IFS
+	IFS=:
+	majmin=($1)
+	IFS=tmpIFS
+	maj=${majmin[0]}
+	min=${majmin[1]}
+	
+	i=0
+	driversCnt=${#DRIVERS_name[@]}
+	tty="?"
+
+	while [ $i -le $driversCnt ]
+	do
+		((i++))
+		# major number of driver
+		dmaj=${DRIVERS_maj[$i]}	
+			
+		if [[ $dmaj != $maj ]]; then
+			continue
+		fi
+		# minor numbers range of driver
+		dmin=${DRIVERS_min[$i]}
+		# extract left and right parts of the range
+		tmpIFS=$IFS
+		IFS="-"
+		minParts=($dmin)
+		IFS=$tmpIFS
+		leftMin=${minParts[0]}
+		rightMin=${minParts[1]}
+
+		if [[ $min < $leftMin || $min > $rightMin ]]; then
+			continue
+		fi
+
+		name=${DRIVERS_name[$i]}
+		if [[ $name == 'pts' ]]; then
+			tty="$name/$min"
+		else
+			tty="${name}${min}"
+		fi
+
+	done
+
+	retvar=$tty
+}
+
+# Get terminal name by pid.
+# 1. Extract tty_nr (7th field) from /proc/pid/stat file
+# 2. Extract MAJ and MIN device numbers from tty_nr
+# 3. Define device name by MAJ and MIN
+get_tty() {
+	# reset return var
+	retvar=""
+	pid=$1
+	tty_nr=`awk '{print $7}' /proc/$pid/stat`
+	get_majmin $tty_nr
+	majmin=$retvar
+	get_tty_by_majmin $majmin
+}
+
+# Get formatted cputime (user + system)
+get_time() {
+	# reset return var
+	retvar=""
+	pid=$1
+	ticks=`awk '{print $14+$15}' /proc/$pid/stat`
+	seconds=$((ticks/HERTZ))
+	tmp=seconds
+	ss=$((seconds % 60))
+	mm=$((seconds / 60))
+	time=`printf "%3u:%02u" "$mm" "$ss"`
+	retvar=$time
+}
+
+# parse /proc/tty/drivers
+load_drivers
+
+for pidDir in `ls /proc | grep -E '^[0-9]+$' | sort -n`
+do
+	# get pid
+	pid=${pidDir/\/proc\//}
+
+	statFile="/proc/${pid}/stat"
+	# check that stat file exists
+	if [[ ! -e "$statFile" ]]; then
+		continue
+	fi
+
+	# get tty name
+	get_tty $pid
+	tty=$retvar
+
+	# get state
+	state=`awk '{print $3}' "$statFile"`
+
+	# get time
+	get_time $pid
+	time=$retvar
+
+	# get cmdline
+	cmdline=`cat /proc/${pid}/cmdline | strings -1 | tr '\n' ' '`
+	if [ -z "$cmdline" ]; then
+		cmdline=`awk '{print $2}' "$statFile"`
+		cmdline=${cmdline/\(/\[}
+		cmdline=${cmdline/\)/\]}
+	fi
+
+	printf "$FORMAT" $pid "$tty" "$state" "$time" "$cmdline"
+done
