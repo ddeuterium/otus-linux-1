@@ -4,7 +4,7 @@
 # Generate same output as `ps ax` command does.
 #
 
-# Dummy temporary variable for returning strings from functionsdd
+# Dummy temporary variable for returning strings from functions
 retvar=""
 
 # format of each output line
