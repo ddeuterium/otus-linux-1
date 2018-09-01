@@ -60,11 +60,11 @@ get_tty_by_majmin() {
 	IFS=tmpIFS
 	maj=${majmin[0]}
 	min=${majmin[1]}
-	
+
+	# find driver with matching major number and minor numbers range
 	i=0
 	driversCnt=${#DRIVERS_name[@]}
 	tty="?"
-
 	while [ $i -le $driversCnt ]
 	do
 		((i++))
