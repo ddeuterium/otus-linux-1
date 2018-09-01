@@ -69,11 +69,11 @@ get_tty_by_majmin() {
 	do
 		((i++))
 		# major number of driver
-		dmaj=${DRIVERS_maj[$i]}	
-			
+		dmaj=${DRIVERS_maj[$i]}			
 		if [[ $dmaj != $maj ]]; then
 			continue
 		fi
+
 		# minor numbers range of driver
 		dmin=${DRIVERS_min[$i]}
 		# extract left and right parts of the range
@@ -83,7 +83,6 @@ get_tty_by_majmin() {
 		IFS=$tmpIFS
 		leftMin=${minParts[0]}
 		rightMin=${minParts[1]}
-
 		if [[ $min < $leftMin || $min > $rightMin ]]; then
 			continue
 		fi
@@ -94,7 +93,6 @@ get_tty_by_majmin() {
 		else
 			tty="${name}${min}"
 		fi
-
 	done
 
 	retvar=$tty
