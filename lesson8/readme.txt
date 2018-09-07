@@ -8,7 +8,7 @@
 На первой виртуалке:
 
 1. Собрал rpm php
-1.1. yumdownloader php
+1.1. yumdownloader --source php
 1.2. rpm -i php-5.4.16-45.el7.src.rpm
 1.3. cd rpmbuild/SPECS/
 1.4. yum-builddep php.spec
