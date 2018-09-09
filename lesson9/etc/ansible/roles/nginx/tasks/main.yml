@@ -1,0 +1,14 @@
+---
+# tasks file for nginx
+   - name: Install nginx
+     yum: pkg=nginx state=latest
+     register: nginx_installed
+     notify:
+        - nginx start
+        - nginx set enabled
+
+   - name: Overwrite nginx config
+     when: nginx_installed|success
+     template: src=nginx.conf dest=/etc/nginx/nginx.conf owner=nginx group=nginx
+     notify:
+        - nginx restart

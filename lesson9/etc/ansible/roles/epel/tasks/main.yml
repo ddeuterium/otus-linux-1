@@ -1,0 +1,4 @@
+---
+# tasks file for epel
+    - name: Install epel
+      yum: pkg=epel-release state=latest
