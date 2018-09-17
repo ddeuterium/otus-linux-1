@@ -1,0 +1,18 @@
+---
+# tasks file for myserver
+   - name: Install htop
+     yum: pkg=htop state=latest
+   - name: Install atop
+     yum: pkg=atop state=latest
+   - name: Install net-tools for netstat
+     yum: pkg=net-tools state=latest
+   - name: Install sysstat for iostat and pidstat
+     yum: pkg=sysstat
+   - name: Install iotop
+     yum: pkg=iotop
+   - name: Set performance settings
+     sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+     with_items: "{{ sysctl_settings }}"
