@@ -1,0 +1,1 @@
+-a exit,always -S open -F path=/etc/nginx/nginx.conf
